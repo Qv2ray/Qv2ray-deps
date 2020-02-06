@@ -1,6 +1,10 @@
 name: Build gRPC for Windows
 
-on: [push]
+on:
+  push:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '0 0 0/2 * *'
 
 jobs:
   build:
@@ -44,6 +48,6 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: artifacts-${{ matrix.gRPC_version }}.7z
-        asset_name: Qv2ray-dep-${{ matrix.gRPC_version }}.7z
+        asset_name: Qv2ray-deps-${{ matrix.gRPC_version }}.7z
         tag: release
         overwrite: true
