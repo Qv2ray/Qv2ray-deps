@@ -33,7 +33,7 @@ jobs:
     - name: Create 7z Release
       uses: DuckSoft/create-7z-action@v1.0
       with:
-        pathSource: ./artifacts
+        pathSource: ./artifacts/${{ matrix.gRPC_version }}
         pathTarget: ./artifacts-${{ matrix.gRPC_version }}.7z
         
     - name: Uploading artifact
