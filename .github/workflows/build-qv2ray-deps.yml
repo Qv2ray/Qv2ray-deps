@@ -25,11 +25,25 @@ jobs:
       run: |
         mkdir ./artifacts
         cd artifacts
-        mkdir ./${{ matrix.gRPC_version }}
         cp -rv $VCPKG_INSTALLATION_ROOT/installed/${{ matrix.gRPC_version }} ./
+        
+    - name: Create 7z Release
+      uses: DuckSoft/create-7z-action@v1.0
+      with:
+        pathSource: ./artifacts
+        pathTarget: ./artifacts-${{ matrix.gRPC_version }}.7z
         
     - name: Uploading artifact
       uses: actions/upload-artifact@master
       with:
         name: artifacts-${{ github.sha }}-${{ matrix.gRPC_version }}.zip
-        path: ./artifacts
+        path: ./artifacts-${{ matrix.gRPC_version }}.7z
+        
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v1-release
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: artifacts-${{ matrix.gRPC_version }}.7z
+        asset_name: Qv2ray-dep-${{ matrix.gRPC_version }}.7z
+        tag: release
+        overwrite: true
