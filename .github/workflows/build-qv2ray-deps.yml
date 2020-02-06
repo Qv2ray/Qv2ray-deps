@@ -9,5 +9,30 @@ jobs:
     
     steps:
     - uses: actions/checkout@v2
-    - name: vcpkg
-      run: vcpkg install grpc
+      
+    - name: Install x86 static version gRPC
+      run: vcpkg install grpc:x86-windows-static
+      
+    - name: Install x64 static version gRPC
+      run: vcpkg install grpc:x64-windows-static
+      
+    - name: Copy installed libraries
+      shell: bash
+      run: |
+        mkdir ./artifacts
+        cd artifacts
+        mkdir ./x86-static
+        cp -rv $(VCPKG_INSTALLATION_ROOT)/installed/x86-windows-static ./x86-static
+        mkdir ./x64-static
+        cp -rv $(VCPKG_INSTALLATION_ROOT)/installed/x64-windows-static ./x64-static
+      
+    - name: Create 7z Release
+      uses: DuckSoft/create-7z-action@v1.0
+      with:
+        pathSource: ./artifacts
+        pathTarget: ./artifacts.7z
+    - name: Uploading artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: ${{ github.sha }}-artifacts.7z
+        path: artifacts.7z
