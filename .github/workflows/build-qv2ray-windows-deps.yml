@@ -1,11 +1,10 @@
-name: Build gRPC for Windows
+name: Build Qv2ray deps for Windows
 
 on:
   push:
   schedule:
-    # * is a special character in YAML so you have to quote this string
-    - cron:  '0 0 0/2 * *'
-
+    - cron: '0 0 0/2 * *'
+      
 jobs:
   build:
     strategy:
