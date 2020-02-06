@@ -37,4 +37,4 @@ jobs:
       uses: actions/upload-artifact@master
       with:
         name: artifacts-${{ github.sha }}-${{ matrix.gRPC_version }}.7z
-        path: artifacts.7z
+        path: artifacts-${{ matrix.gRPC_version }}.7z
