@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: Build gRPC for Windows
 
 on: [push]
 
@@ -6,7 +6,7 @@ jobs:
   build:
     strategy:
       matrix:
-        gRPC_version: [x86-windows-static, x86-windows, x64-windows-static, x64-windows]
+        gRPC_version: [x86-windows, x64-windows]
       fail-fast: false
       
     runs-on: windows-latest
@@ -26,7 +26,7 @@ jobs:
         mkdir ./artifacts
         cd artifacts
         mkdir ./${{ matrix.gRPC_version }}
-        cp -rv $(VCPKG_INSTALLATION_ROOT)/installed/${{ matrix.gRPC_version }} ./${{ matrix.gRPC_version }}
+        cp -rv $VCPKG_INSTALLATION_ROOT/installed/${{ matrix.gRPC_version }} ./${{ matrix.gRPC_version }}
       
     - name: Create 7z Release
       uses: DuckSoft/create-7z-action@v1.0
