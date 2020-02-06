@@ -1,9 +1,9 @@
 name: Build Qv2ray deps for Windows
 
 on:
-  push:    
+  push
   schedule:
-    - cron: '0 0 0/2 * *'
+      - cron: '0 0 0/2 * *'
       
 jobs:
   build:
