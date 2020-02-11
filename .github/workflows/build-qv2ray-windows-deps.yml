@@ -20,6 +20,9 @@ jobs:
     - name: Update vcpkg
       run: vcpkg update
       
+    - name: Search for gRPC
+      run: vcpkg search grpc
+      
     - name: Install version gRPC ${{ matrix.gRPC_version }}
       run: vcpkg install grpc:${{ matrix.gRPC_version }}
       
