@@ -18,10 +18,15 @@ jobs:
     - uses: actions/checkout@v2
       
     - name: Update vcpkg
-      run: vcpkg update
+      shell: bash
+      run: vcpkg update > 
       
     - name: Search for gRPC
-      run: vcpkg search grpc
+      shell: bash
+      run: |
+        mkdir ./artifacts
+        mkdir ./artifacts/${{ matrix.gRPC_version }}
+        vcpkg search grpc > ./artifacts/${{ matrix.gRPC_version }}/VERSION
       
     - name: Install version gRPC ${{ matrix.gRPC_version }}
       run: vcpkg install grpc:${{ matrix.gRPC_version }}
@@ -29,7 +34,6 @@ jobs:
     - name: Copy installed libraries
       shell: bash
       run: |
-        mkdir ./artifacts
         cd artifacts
         cp -rv $VCPKG_INSTALLATION_ROOT/installed/${{ matrix.gRPC_version }} ./
         
