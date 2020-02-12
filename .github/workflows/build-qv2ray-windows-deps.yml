@@ -19,7 +19,7 @@ jobs:
       
     - name: Update vcpkg
       shell: bash
-      run: vcpkg update > 
+      run: vcpkg update
       
     - name: Search for gRPC
       shell: bash
