@@ -20,12 +20,20 @@ jobs:
     - name: Update vcpkg
       shell: bash
       run: vcpkg update
+    
+    - name: Update vcpkg - git
+      shell: bash
+      run: |
+        set +e
+        cd $VCPKG_INSTALLATION_ROOT
+        git pull --verbose
       
     - name: Search for gRPC
       shell: bash
       run: |
         mkdir ./artifacts
         mkdir ./artifacts/${{ matrix.gRPC_version }}
+        vcpkg search grpc
         vcpkg search grpc > ./artifacts/${{ matrix.gRPC_version }}/VERSION
       
     - name: Install version gRPC ${{ matrix.gRPC_version }}
