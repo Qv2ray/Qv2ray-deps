@@ -10,6 +10,7 @@ jobs:
     strategy:
       matrix:
         arch: [x86-windows, x64-windows]
+        package: [grpc, pcre2, libsodium]
       fail-fast: false
       
     runs-on: windows-latest
@@ -28,20 +29,13 @@ jobs:
         cd $VCPKG_INSTALLATION_ROOT
         git pull --verbose
       
-    - name: Search for gRPC
-      shell: bash
-      run: |
-        mkdir ./artifacts
-        mkdir ./artifacts/${{ matrix.arch }}
-        vcpkg search grpc
-        vcpkg search grpc > ./artifacts/${{ matrix.arch }}/VERSION
-      
-    - name: Install version gRPC ${{ matrix.arch }}
-      run: vcpkg install grpc:${{ matrix.arch }} pcre2:${{ matrix.arch }} libsodium:${{ matrix.arch }}
+    - name: Install version ${{ matrix.package }} ${{ matrix.arch }}
+      run: vcpkg install ${{ matrix.package }}:${{ matrix.arch }}
       
     - name: Copy installed libraries
       shell: bash
       run: |
+        mkdir ./artifacts
         cd artifacts
         cp -rv $VCPKG_INSTALLATION_ROOT/installed/${{ matrix.arch }} ./
         
@@ -54,7 +48,7 @@ jobs:
     - name: Uploading artifact
       uses: actions/upload-artifact@master
       with:
-        name: artifacts-${{ github.sha }}-${{ matrix.arch }}.zip
+        name: artifacts-${{ matrix.package }}-${{ matrix.arch }}.zip
         path: ./artifacts-${{ matrix.arch }}.7z
         
     - name: Upload binaries to release
@@ -62,6 +56,6 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: artifacts-${{ matrix.arch }}.7z
-        asset_name: Qv2ray-deps-${{ matrix.arch }}.7z
+        asset_name: Qv2ray-deps-${{ matrix.package }}-${{ matrix.arch }}.7z
         tag: release
         overwrite: true
