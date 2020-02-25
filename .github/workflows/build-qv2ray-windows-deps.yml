@@ -9,7 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-        gRPC_version: [x86-windows, x64-windows]
+        arch: [x86-windows, x64-windows]
       fail-fast: false
       
     runs-on: windows-latest
@@ -32,36 +32,36 @@ jobs:
       shell: bash
       run: |
         mkdir ./artifacts
-        mkdir ./artifacts/${{ matrix.gRPC_version }}
+        mkdir ./artifacts/${{ matrix.arch }}
         vcpkg search grpc
-        vcpkg search grpc > ./artifacts/${{ matrix.gRPC_version }}/VERSION
+        vcpkg search grpc > ./artifacts/${{ matrix.arch }}/VERSION
       
-    - name: Install version gRPC ${{ matrix.gRPC_version }}
-      run: vcpkg install grpc:${{ matrix.gRPC_version }}
+    - name: Install version gRPC ${{ matrix.arch }}
+      run: vcpkg install grpc:${{ matrix.arch }} pcre2:${{ matrix.arch }} libsodium:${{ matrix.arch }}
       
     - name: Copy installed libraries
       shell: bash
       run: |
         cd artifacts
-        cp -rv $VCPKG_INSTALLATION_ROOT/installed/${{ matrix.gRPC_version }} ./
+        cp -rv $VCPKG_INSTALLATION_ROOT/installed/${{ matrix.arch }} ./
         
     - name: Create 7z Release
       uses: DuckSoft/create-7z-action@v1.0
       with:
-        pathSource: ./artifacts/${{ matrix.gRPC_version }}
-        pathTarget: ./artifacts-${{ matrix.gRPC_version }}.7z
+        pathSource: ./artifacts/${{ matrix.arch }}
+        pathTarget: ./artifacts-${{ matrix.arch }}.7z
         
     - name: Uploading artifact
       uses: actions/upload-artifact@master
       with:
-        name: artifacts-${{ github.sha }}-${{ matrix.gRPC_version }}.zip
-        path: ./artifacts-${{ matrix.gRPC_version }}.7z
+        name: artifacts-${{ github.sha }}-${{ matrix.arch }}.zip
+        path: ./artifacts-${{ matrix.arch }}.7z
         
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: artifacts-${{ matrix.gRPC_version }}.7z
-        asset_name: Qv2ray-deps-${{ matrix.gRPC_version }}.7z
+        file: artifacts-${{ matrix.arch }}.7z
+        asset_name: Qv2ray-deps-${{ matrix.arch }}.7z
         tag: release
         overwrite: true
