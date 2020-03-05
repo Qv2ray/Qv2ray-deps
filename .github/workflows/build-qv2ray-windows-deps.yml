@@ -44,6 +44,8 @@ jobs:
       run: |
         cd artifacts
         cp -rv $VCPKG_INSTALLATION_ROOT/installed/${{ matrix.gRPC_version }} ./
+        rm -rvf ./${{ matrix.gRPC_version }}/html
+        rm -rvf ./${{ matrix.gRPC_version }}/debug/html
         
     - name: Create 7z Release
       uses: DuckSoft/create-7z-action@v1.0
