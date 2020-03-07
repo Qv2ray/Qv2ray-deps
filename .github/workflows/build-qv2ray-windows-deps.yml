@@ -40,13 +40,13 @@ jobs:
       uses: actions/upload-artifact@master
       with:
         name: artifacts-${{ matrix.package }}-${{ matrix.arch }}.zip
-        path: ./${{ matrix.package }}-${{ matrix.arch }}.7z
+        path: $VCPKG_INSTALLATION_ROOT/${{ matrix.package }}-${{ matrix.arch }}.7z
         
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{ matrix.package }}-${{ matrix.arch }}.7z
+        file: $VCPKG_INSTALLATION_ROOT/${{ matrix.package }}-${{ matrix.arch }}.7z
         asset_name: Qv2ray-deps-${{ matrix.package }}-${{ matrix.arch }}.7z
         tag: release
         overwrite: true
