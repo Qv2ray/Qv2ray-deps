@@ -32,30 +32,21 @@ jobs:
     - name: Install version ${{ matrix.package }} ${{ matrix.arch }}
       run: vcpkg install ${{ matrix.package }}:${{ matrix.arch }}
       
-    - name: Copy installed libraries
+    - name: Export installed libraries
       shell: bash
-      run: |
-        mkdir ./artifacts
-        cd artifacts
-        cp -rv $VCPKG_INSTALLATION_ROOT/installed/${{ matrix.arch }} ./
-        
-    - name: Create 7z Release
-      uses: DuckSoft/create-7z-action@v1.0
-      with:
-        pathSource: ./artifacts/${{ matrix.arch }}
-        pathTarget: ./artifacts-${{ matrix.arch }}.7z
+      run: vcpkg export ${{ matrix.package }}:${{ matrix.arch }} --output=${{ matrix.package }}-${{ matrix.arch }} --7zip
         
     - name: Uploading artifact
       uses: actions/upload-artifact@master
       with:
         name: artifacts-${{ matrix.package }}-${{ matrix.arch }}.zip
-        path: ./artifacts-${{ matrix.arch }}.7z
+        path: ./${{ matrix.package }}-${{ matrix.arch }}.7z
         
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: artifacts-${{ matrix.arch }}.7z
+        file: ${{ matrix.package }}-${{ matrix.arch }}.7z
         asset_name: Qv2ray-deps-${{ matrix.package }}-${{ matrix.arch }}.7z
         tag: release
         overwrite: true
