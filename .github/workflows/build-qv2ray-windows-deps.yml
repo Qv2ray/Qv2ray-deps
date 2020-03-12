@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         arch: [x86-windows, x64-windows]
-        package: [grpc, pcre2, libsodium, libiconv]
+        package: [libsodium, libuv]
       fail-fast: false
       
     runs-on: windows-latest
