@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         arch: [x86-windows, x64-windows]
-        package: [grpc, openssl]
+        package: [curl]
       fail-fast: false
       
     runs-on: windows-latest
