@@ -16,44 +16,38 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v2
-      
-    - name: Update vcpkg
-      shell: bash
-      run: vcpkg update
-    
-    - name: Update vcpkg - git
+    - uses: actions/checkout@v2    
+    - name: Install VCPKG
       shell: bash
       run: |
         set +e
-        cd $VCPKG_INSTALLATION_ROOT
-        git pull --verbose
+        git clone https://github.com/microsoft/vcpkg/
+        ./vcpkg/bootstrap-vcpkg.sh
     
     - name: Create triplet
       shell: bash
       run: |
-        ORIGINAL_PATH=$(pwd)
-        cd $VCPKG_INSTALLATION_ROOT
-        git apply -v $ORIGINAL_PATH/0001_vcpkg_fix_curl_android_build.patch
+        cd vcpkg
+        git apply -v ../0001_vcpkg_fix_curl_android_build.patch
         sudo mkdir -p ./triplets/community
         echo "
         set(VCPKG_TARGET_ARCHITECTURE ${{ matrix.arch }})
         set(VCPKG_CRT_LINKAGE dynamic)
         set(VCPKG_LIBRARY_LINKAGE dynamic)
         set(VCPKG_CMAKE_SYSTEM_NAME Android)
-        " | sudo tee ./triplets/community/${{ matrix.arch }}-android.cmake
+        " | tee ./triplets/community/${{ matrix.arch }}-android.cmake
         ls -lah ./triplets/community
     
     - name: Install version ${{ matrix.package }} ${{ matrix.arch }}
       run: |
         export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk-bundle"
-        vcpkg install ${{ matrix.package }}:${{ matrix.arch }}-android
+        ./vcpkg/vcpkg install ${{ matrix.package }}:${{ matrix.arch }}-android
       
     - name: Export installed libraries
       shell: bash
       run: |
-        vcpkg export ${{ matrix.package }}:${{ matrix.arch }}-android --output=${{ matrix.arch }} --7zip
-        cp $VCPKG_INSTALLATION_ROOT/${{ matrix.arch }}.7z ./
+        ./vcpkg/vcpkg export ${{ matrix.package }}:${{ matrix.arch }}-android --output=${{ matrix.arch }} --7zip
+        cp ./vcpkg/${{ matrix.arch }}-android.7z ./
         
     - name: Uploading artifact
       uses: actions/upload-artifact@master
