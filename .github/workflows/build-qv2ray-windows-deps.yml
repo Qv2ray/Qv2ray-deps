@@ -40,10 +40,10 @@ jobs:
         mkdir -p ./installed/x86-android/tools/protobuf
         mkdir -p ./installed/x64-android/tools/protobuf
         mkdir -p ./installed/x64-linux/tools/protobuf
-        ln -sr ../../x64-linux/tools/protobuf/protoc ./installed/x64-android/tools/protobuf/protoc
-        ln -sr ../../x64-linux/tools/protobuf/protoc ./installed/x86-android/tools/protobuf/protoc
-        ln -sr ../../x64-linux/tools/protobuf/protoc ./installed/x64-android/bin/protoc
-        ln -sr ../../x64-linux/tools/protobuf/protoc ./installed/x86-android/bin/protoc
+        ln -s ../../x64-linux/tools/protobuf/protoc ./installed/x64-android/tools/protobuf/protoc
+        ln -s ../../x64-linux/tools/protobuf/protoc ./installed/x86-android/tools/protobuf/protoc
+        ln -s ../../x64-linux/tools/protobuf/protoc ./installed/x64-android/bin/protoc
+        ln -s ../../x64-linux/tools/protobuf/protoc ./installed/x86-android/bin/protoc
         ./vcpkg install protobuf
         git apply -v ../0001_vcpkg_fix_curl_android_build.patch
         sudo mkdir -p ./triplets/community
