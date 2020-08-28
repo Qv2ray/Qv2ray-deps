@@ -13,7 +13,7 @@ jobs:
         package: [grpc, openssl, curl]
       fail-fast: false
       
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v2
