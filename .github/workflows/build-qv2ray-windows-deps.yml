@@ -26,16 +26,16 @@ jobs:
       shell: bash
       run: |
         set +e
+        ORIGINAL_PATH=$(pwd)
         cd $VCPKG_INSTALLATION_ROOT
+        git apply -v $ORIGINAL_PATH/0001_vcpkg_fix_curl_android_build.patch
         pwd
         ls -lah
     
     - name: Create triplet
       shell: bash
       run: |
-        ORIGINAL_PATH=$(pwd)
         cd $VCPKG_INSTALLATION_ROOT
-        git apply $ORIGINAL_PATH/0001_vcpkg_fix_curl_android_build.patch
         sudo mkdir -p ./triplets/community
         echo "
         set(VCPKG_TARGET_ARCHITECTURE ${{ matrix.arch }})
