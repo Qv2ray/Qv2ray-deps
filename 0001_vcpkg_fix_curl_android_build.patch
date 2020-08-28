@@ -1,0 +1,15 @@
+ ports/curl/portfile.cmake | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/ports/curl/portfile.cmake b/ports/curl/portfile.cmake
+index 0ad9cd7a2..392b52dac 100644
+--- a/ports/curl/portfile.cmake
++++ b/ports/curl/portfile.cmake
+@@ -90,6 +90,7 @@ if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+ else()
+     file(INSTALL ${CURRENT_PACKAGES_DIR}/bin/curl-config DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT})
+     file(REMOVE ${CURRENT_PACKAGES_DIR}/bin/curl-config ${CURRENT_PACKAGES_DIR}/debug/bin/curl-config)
++    file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/bin ${CURRENT_PACKAGES_DIR}/debug/bin)
+     #Fix install path
+     file(READ ${CURRENT_PACKAGES_DIR}/share/${PORT}/curl-config CURL_CONFIG)
+     string(REPLACE "${CURRENT_PACKAGES_DIR}" "${CURRENT_INSTALLED_DIR}" CURL_CONFIG "${CURL_CONFIG}")

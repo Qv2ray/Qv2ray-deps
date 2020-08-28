@@ -33,12 +33,14 @@ jobs:
     - name: Create triplet
       shell: bash
       run: |
+        ORIGINAL_PATH=$(pwd)
         cd $VCPKG_INSTALLATION_ROOT
+        git apply $ORIGINAL_PATH/0001_vcpkg_fix_curl_android_build.patch
         sudo mkdir -p ./triplets/community
         echo "
         set(VCPKG_TARGET_ARCHITECTURE ${{ matrix.arch }})
         set(VCPKG_CRT_LINKAGE dynamic)
-        set(VCPKG_LIBRARY_LINKAGE static)
+        set(VCPKG_LIBRARY_LINKAGE dynamic)
         set(VCPKG_CMAKE_SYSTEM_NAME Android)
         " | sudo tee ./triplets/community/${{ matrix.arch }}-android.cmake
         ls -lah ./triplets/community
