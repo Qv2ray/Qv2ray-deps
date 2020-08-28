@@ -28,7 +28,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: /home/runner/.cache/vcpkg
-        key: key
+        key: qv2ray-deps-android-cache-key
     
     - name: Create triplet
       shell: bash
@@ -37,6 +37,8 @@ jobs:
         cd vcpkg
         mkdir -p ./installed/x86-android/bin
         mkdir -p ./installed/x64-android/bin
+        mkdir -p ./installed/x86-android/tools/protobuf
+        mkdir -p ./installed/x64-android/tools/protobuf
         mkdir -p ./installed/x64-linux/tools/protobuf
         ln -sr ../../x64-linux/tools/protobuf/protoc ./installed/x64-android/tools/protobuf/protoc
         ln -sr ../../x64-linux/tools/protobuf/protoc ./installed/x86-android/tools/protobuf/protoc
