@@ -27,7 +27,7 @@ jobs:
       run: |
         set +e
         cd $VCPKG_INSTALLATION_ROOT
-        git pull --verbose
+        ls -lah
       
     - name: Install version ${{ matrix.package }} ${{ matrix.arch }}
       run: |
