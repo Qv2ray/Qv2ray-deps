@@ -1,4 +1,4 @@
-name: Build Qv2ray deps for Windows
+name: Build Qv2ray deps for Android
 
 on:
   push:
@@ -9,7 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-        arch: [x86-windows, x64-windows]
+        arch: [arm64-android, x86-android, x64-android, arm-android]
         package: [grpc, openssl, curl]
       fail-fast: false
       
@@ -30,7 +30,9 @@ jobs:
         git pull --verbose
       
     - name: Install version ${{ matrix.package }} ${{ matrix.arch }}
-      run: vcpkg install ${{ matrix.package }}:${{ matrix.arch }}
+      run: |
+        export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk-bundle"
+        vcpkg install ${{ matrix.package }}:${{ matrix.arch }}
       
     - name: Export installed libraries
       shell: bash
