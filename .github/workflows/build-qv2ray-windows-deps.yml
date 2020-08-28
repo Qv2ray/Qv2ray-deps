@@ -28,9 +28,8 @@ jobs:
         set +e
         ORIGINAL_PATH=$(pwd)
         cd $VCPKG_INSTALLATION_ROOT
+        git pull --verbose
         git apply -v $ORIGINAL_PATH/0001_vcpkg_fix_curl_android_build.patch
-        pwd
-        ls -lah
     
     - name: Create triplet
       shell: bash
