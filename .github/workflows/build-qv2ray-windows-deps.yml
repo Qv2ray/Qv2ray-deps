@@ -41,7 +41,7 @@ jobs:
     - name: Install version ${{ matrix.package }} ${{ matrix.arch }}
       run: |
         export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk-bundle"
-        ./vcpkg/vcpkg install ${{ matrix.package }}:${{ matrix.arch }}-android
+        ./vcpkg/vcpkg install ${{ matrix.package }}:${{ matrix.arch }}-android --debug
       
     - name: Export installed libraries
       shell: bash
