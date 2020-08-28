@@ -9,7 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-        arch: [arm64-android, x86-android, x64-android, arm-android]
+        arch: [arm64, x86, x64, arm]
         package: [grpc, openssl, curl]
       fail-fast: false
       
@@ -28,7 +28,18 @@ jobs:
         set +e
         cd $VCPKG_INSTALLATION_ROOT
         ls -lah
-      
+    
+    - name: Create triplet
+      shell: bash
+      run: |
+        cd $VCPKG_ROOT
+        echo "
+        set(VCPKG_TARGET_ARCHITECTURE ${{ matrix.arch }})
+        set(VCPKG_CRT_LINKAGE dynamic)
+        set(VCPKG_LIBRARY_LINKAGE dynamic)
+        set(VCPKG_CMAKE_SYSTEM_NAME Android)
+        " | sudo tee triplets/community/${{ matrix.arch }}-android.cmake
+    
     - name: Install version ${{ matrix.package }} ${{ matrix.arch }}
       run: |
         export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk-bundle"
@@ -37,7 +48,7 @@ jobs:
     - name: Export installed libraries
       shell: bash
       run: |
-        vcpkg export ${{ matrix.package }}:${{ matrix.arch }} --output=${{ matrix.arch }} --7zip
+        vcpkg export ${{ matrix.package }}:${{ matrix.arch }}-android --output=${{ matrix.arch }} --7zip
         cp $VCPKG_INSTALLATION_ROOT/${{ matrix.arch }}.7z ./
         
     - name: Uploading artifact
