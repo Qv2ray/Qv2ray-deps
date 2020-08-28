@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         arch: [x86, x64]
-        package: [grpc, curl]
+        package: [grpc]
       fail-fast: false
       
     runs-on: ubuntu-latest
@@ -27,6 +27,7 @@ jobs:
     - name: Create triplet
       shell: bash
       run: |
+        set +e
         cd vcpkg
         git apply -v ../0001_vcpkg_fix_curl_android_build.patch
         sudo mkdir -p ./triplets/community
