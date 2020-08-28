@@ -23,6 +23,12 @@ jobs:
         set +e
         git clone https://github.com/microsoft/vcpkg/
         ./vcpkg/bootstrap-vcpkg.sh
+
+    - name: Cache VCPKG
+      uses: actions/cache@v1
+      with:
+        path: /home/runner/.cache/vcpkg
+        key: key
     
     - name: Create triplet
       shell: bash
