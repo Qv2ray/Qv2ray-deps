@@ -47,7 +47,7 @@ jobs:
       shell: bash
       run: |
         ./vcpkg/vcpkg export ${{ matrix.package }}:${{ matrix.arch }}-android --output=${{ matrix.arch }} --7zip
-        cp ./vcpkg/${{ matrix.arch }}-android.7z ./
+        cp ./vcpkg/${{ matrix.arch }}.7z ./
         
     - name: Uploading artifact
       uses: actions/upload-artifact@master
