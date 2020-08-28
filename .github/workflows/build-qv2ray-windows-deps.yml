@@ -9,7 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-        arch: [arm64, x86, x64, arm]
+        arch: [x86, x64]
         package: [grpc, curl]
       fail-fast: false
       
@@ -37,6 +37,7 @@ jobs:
         set(VCPKG_CMAKE_SYSTEM_NAME Android)
         " | tee ./triplets/community/${{ matrix.arch }}-android.cmake
         ls -lah ./triplets/community
+        cat /home/runner/work/Qv2ray-deps/Qv2ray-deps/vcpkg/buildtrees/grpc/install-${{ matrix.arch }}-android-dbg-out.log
     
     - name: Install version ${{ matrix.package }} ${{ matrix.arch }}
       run: |
