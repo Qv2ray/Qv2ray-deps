@@ -33,7 +33,7 @@ jobs:
     - name: Create triplet
       shell: bash
       run: |
-        cd $VCPKG_ROOT
+        cd $VCPKG_INSTALLATION_ROOT
         sudo mkdir -p ./triplets/community
         echo "
         set(VCPKG_TARGET_ARCHITECTURE ${{ matrix.arch }})
