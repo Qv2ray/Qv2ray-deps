@@ -12,7 +12,7 @@ index 0ad9cd7a2..392b52dac 100644
      string(REPLACE "${CURRENT_PACKAGES_DIR}" "${CURRENT_INSTALLED_DIR}" CURL_CONFIG "${CURL_CONFIG}")
 diff --git a/ports/grpc/00012-fix-x86-android-build.patch b/ports/grpc/00012-fix-x86-android-build.patch
 new file mode 100644
-index 000000000..38db5e7b5
+index 000000000..b189a71a2
 --- /dev/null
 +++ b/ports/grpc/00012-fix-x86-android-build.patch
 @@ -0,0 +1,13 @@
@@ -30,7 +30,7 @@ index 000000000..38db5e7b5
 + void* __wrap_memcpy(void* destination, const void* source, size_t num) {
 +   return memcpy(destination, source, num);
 diff --git a/ports/grpc/portfile.cmake b/ports/grpc/portfile.cmake
-index 79e344b54..ae98eb6fc 100644
+index 79e344b54..836635c93 100644
 --- a/ports/grpc/portfile.cmake
 +++ b/ports/grpc/portfile.cmake
 @@ -2,13 +2,7 @@ if(VCPKG_TARGET_IS_WINDOWS)
@@ -48,14 +48,18 @@ index 79e344b54..ae98eb6fc 100644
          00001-fix-uwp.patch
          00002-static-linking-in-linux.patch
          00003-undef-base64-macro.patch
-@@ -20,6 +14,20 @@ vcpkg_from_github(
+@@ -20,12 +14,27 @@ vcpkg_from_github(
          snprintf.patch
  )
  
+-if(VCPKG_TARGET_IS_UWP OR VCPKG_TARGET_ARCHITECTURE STREQUAL "arm" OR VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
+-    set(gRPC_BUILD_CODEGEN OFF)
+-else()
+-    set(gRPC_BUILD_CODEGEN ON)
 +if(VCPKG_CMAKE_SYSTEM_NAME STREQUAL "Android")
 +    list(APPEND GRPC_PATCHES 00012-fix-x86-android-build.patch)
-+endif()
-+
+ endif()
+ 
 +vcpkg_from_github(
 +    OUT_SOURCE_PATH SOURCE_PATH
 +    REPO grpc/grpc
@@ -66,6 +70,13 @@ index 79e344b54..ae98eb6fc 100644
 +        ${GRPC_PATCHES}
 +)
 +
- if(VCPKG_TARGET_IS_UWP OR VCPKG_TARGET_ARCHITECTURE STREQUAL "arm" OR VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
-     set(gRPC_BUILD_CODEGEN OFF)
- else()
++# 为嘛呀
++#if(VCPKG_TARGET_IS_UWP OR VCPKG_TARGET_ARCHITECTURE STREQUAL "arm" OR VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
++#    set(gRPC_BUILD_CODEGEN OFF)
++#else()
++    set(gRPC_BUILD_CODEGEN ON)
++#endif()
++
+ string(COMPARE EQUAL "${VCPKG_CRT_LINKAGE}" "static" gRPC_MSVC_STATIC_RUNTIME)
+ string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" gRPC_STATIC_LINKING)
+ 
