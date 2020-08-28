@@ -41,11 +41,12 @@ jobs:
         set(VCPKG_LIBRARY_LINKAGE dynamic)
         set(VCPKG_CMAKE_SYSTEM_NAME Android)
         " | sudo tee triplets/community/${{ matrix.arch }}-android.cmake
+        ls -lah ./triplets/community
     
     - name: Install version ${{ matrix.package }} ${{ matrix.arch }}
       run: |
         export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk-bundle"
-        vcpkg install ${{ matrix.package }}:${{ matrix.arch }}
+        vcpkg install ${{ matrix.package }}:${{ matrix.arch }}-android
       
     - name: Export installed libraries
       shell: bash
