@@ -20,8 +20,10 @@ jobs:
         include:
           - os: windows
             runon: windows-latest
+            cache_path: C:\Users\runneradmin\AppData\Local\vcpkg
           - os: android
             runon: ubuntu-latest
+            cache_path: /home/runner/.cache/vcpkg
       fail-fast: false
       
     runs-on: ${{ matrix.runon }}
@@ -38,7 +40,7 @@ jobs:
     - name: Cache VCPKG
       uses: actions/cache@v1
       with:
-        path: /home/runner/.cache/vcpkg
+        path: ${{ matrix.cachepath }}
         key: qv2ray-deps-${{ matrix.os }}-cache-${{ matrix.arch }}-${{ matrix.package }}
 
     - name: Prepare gRPC
