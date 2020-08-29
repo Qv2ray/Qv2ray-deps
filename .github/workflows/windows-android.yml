@@ -49,33 +49,35 @@ jobs:
       if: matrix.package == 'grpc'
       shell: bash
       run: |
+        set +e
         cd vcpkg
         ./vcpkg install grpc
         mkdir -p ./installed/${{ matrix.arch }}-android/bin
-        cp ./installed/x64-${{ matrix.osname }}/tools/protobuf/* ./installed/${{ matrix.arch }}-android/bin
-        cp ./installed/x64-${{ matrix.osname }}/tools/grpc/* ./installed/${{ matrix.arch }}-android/bin
+        cp -rv ./installed/x86-${{ matrix.osname }}/ ./installed/x64-${{ matrix.osname }}/
+        cp -rv ./installed/x64-${{ matrix.osname }}/tools/protobuf/* ./installed/${{ matrix.arch }}-android/bin
+        cp -rv ./installed/x64-${{ matrix.osname }}/tools/grpc/* ./installed/${{ matrix.arch }}-android/bin
 
     - name: Create Tools 7z
       if: matrix.package == 'grpc'
       uses: DuckSoft/create-7z-action@v1.0
       with:
         pathSource: ./vcpkg/installed/x64-${{ matrix.osname }}/tools
-        pathTarget: ./gRPC-tools-x64-${{ matrix.osname }}.7z
+        pathTarget: ./gRPC-tools-${{ matrix.osname }}.7z
 
     - name: Upload Artifact
       if: matrix.package == 'grpc'
       uses: actions/upload-artifact@master
       with:
-        name: gRPC-tools-x64-${{ matrix.osname }}.7z
-        path: gRPC-tools-x64-${{ matrix.osname }}.7z
+        name: gRPC-tools-${{ matrix.osname }}.7z
+        path: gRPC-tools-${{ matrix.osname }}.7z
         
     - name: Upload To Release
       if: matrix.package == 'grpc'
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: gRPC-tools-x64-${{ matrix.osname }}.7z
-        asset_name: gRPC-tools-x64-${{ matrix.osname }}.7z
+        file: gRPC-tools-${{ matrix.osname }}.7z
+        asset_name: gRPC-tools-${{ matrix.osname }}.7z
         tag: release
         overwrite: true
 
