@@ -35,6 +35,7 @@ jobs:
       run: |
         cd vcpkg
         ./vcpkg install protobuf
+        ./vcpkg install grpc
         mkdir -p ./installed/x86-android/bin
         mkdir -p ./installed/x64-android/bin
         mkdir -p ./installed/x86-android/tools/protobuf
