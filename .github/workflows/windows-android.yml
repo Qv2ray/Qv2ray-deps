@@ -59,23 +59,23 @@ jobs:
       if: matrix.package == 'grpc'
       uses: DuckSoft/create-7z-action@v1.0
       with:
-        pathSource: ./installed/x64-${{ matrix.osname }}/tools
-        pathTarget: ./gRPC-tools.7z
+        pathSource: ./vcpkg/installed/x64-${{ matrix.osname }}/tools
+        pathTarget: ./gRPC-tools-x64-${{ matrix.osname }}.7z
 
     - name: Upload Artifact
       if: matrix.package == 'grpc'
       uses: actions/upload-artifact@master
       with:
-        name: gRPC-tools.7z
-        path: gRPC-tools.7z
+        name: gRPC-tools-x64-${{ matrix.osname }}.7z
+        path: gRPC-tools-x64-${{ matrix.osname }}.7z
         
     - name: Upload To Release
       if: matrix.package == 'grpc'
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: gRPC-tools.7z
-        asset_name: gRPC-tools.7z
+        file: gRPC-tools-x64-${{ matrix.osname }}.7z
+        asset_name: gRPC-tools-x64-${{ matrix.osname }}.7z
         tag: release
         overwrite: true
 
