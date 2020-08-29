@@ -42,7 +42,7 @@ jobs:
         key: qv2ray-deps-${{ matrix.os }}-cache-${{ matrix.arch }}-${{ matrix.package }}
 
     - name: Prepare gRPC
-      if: matrix.package == 'grpc'
+      if: matrix.package == 'grpc' && matrix.os == 'android'
       shell: bash
       run: |
         cd vcpkg
@@ -75,13 +75,13 @@ jobs:
     - name: Export Libraries
       shell: bash
       run: |
-        ./vcpkg/vcpkg export ${{ matrix.package }}:${{ matrix.arch }}-${{ matrix.os }} --output=${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }} --7zip
-        cp ./vcpkg/${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z ./
+        ./vcpkg/vcpkg export ${{ matrix.package }}:${{ matrix.arch }}-${{ matrix.os }} --output=${{ matrix.os }}-${{ matrix.arch }} --7zip
+        cp ./vcpkg/${{ matrix.os }}-${{ matrix.arch }}.7z ./${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z
         
     - name: Upload Artifact
       uses: actions/upload-artifact@master
       with:
-        name: artifacts-${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.zip
+        name: ${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z
         path: ${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z
         
     - name: Upload To Release
@@ -89,6 +89,6 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: ${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z
-        asset_name: Qv2ray-deps-${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z
+        asset_name: ${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z
         tag: release
         overwrite: true
