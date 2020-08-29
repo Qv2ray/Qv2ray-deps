@@ -1,4 +1,4 @@
-name: Build Qv2ray deps for Android
+name: OpenSSL cURL gRPC for Android / Windows
 
 on:
   push:
@@ -9,11 +9,22 @@ jobs:
   build:
     strategy:
       matrix:
+        os: [windows, android]
         arch: [arm, arm64, x86, x64]
         package: [grpc, curl, openssl]
+        exclude:
+          - os: windows
+            arch: arm
+          - os: windows
+            arch: arm64
+        include:
+          - os: windows
+            runon: windows-latest
+          - os: android
+            runon: ubuntu-latest
       fail-fast: false
       
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runon }}
     
     steps:
     - uses: actions/checkout@v2    
@@ -28,7 +39,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: /home/runner/.cache/vcpkg
-        key: qv2ray-deps-android-cache-${{ matrix.arch }}-${{ matrix.package }}
+        key: qv2ray-deps-${{ matrix.os }}-cache-${{ matrix.arch }}-${{ matrix.package }}
 
     - name: Prepare gRPC
       if: matrix.package == 'grpc'
@@ -41,6 +52,7 @@ jobs:
         cp ./installed/x64-linux/tools/grpc/grpc_cpp_plugin ./installed/${{ matrix.arch }}-android/bin
     
     - name: Prepare Android Triplet
+      if: matrix.os == 'android'
       shell: bash
       run: |
         cd vcpkg
@@ -56,28 +68,26 @@ jobs:
     
     - name: Install ${{ matrix.package }} on ${{ matrix.arch }}
       run: |
-        set +e
-        export PATH=$PATH:/home/runner/work/Qv2ray-deps/Qv2ray-deps/vcpkg/installed/x64-linux/tools/grpc
         export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk-bundle"
-        ./vcpkg/vcpkg install ${{ matrix.package }}:${{ matrix.arch }}-android --debug
+        ./vcpkg/vcpkg install ${{ matrix.package }}:${{ matrix.arch }}-${{ matrix.os }} --debug
       
     - name: Export Libraries
       shell: bash
       run: |
-        ./vcpkg/vcpkg export ${{ matrix.package }}:${{ matrix.arch }}-android --output=${{ matrix.arch }}-${{ matrix.package }} --7zip
+        ./vcpkg/vcpkg export ${{ matrix.package }}:${{ matrix.arch }}-${{ matrix.os }} --output=${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }} --7zip
         cp ./vcpkg/${{ matrix.arch }}-${{ matrix.package }}.7z ./
         
     - name: Upload Artifact
       uses: actions/upload-artifact@master
       with:
-        name: artifacts-${{ matrix.package }}-${{ matrix.arch }}.zip
-        path: ${{ matrix.arch }}-${{ matrix.package }}.7z
+        name: artifacts-${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.zip
+        path: ${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z
         
     - name: Upload To Release
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{ matrix.arch }}-${{ matrix.package }}.7z
-        asset_name: Qv2ray-deps-${{ matrix.package }}-${{ matrix.arch }}.7z
+        file: ${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z
+        asset_name: Qv2ray-deps-${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z
         tag: release
         overwrite: true
