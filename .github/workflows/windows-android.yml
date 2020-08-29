@@ -19,9 +19,11 @@ jobs:
             arch: arm64
         include:
           - os: windows
+            osname: windows
             runon: windows-latest
             cache_path: C:\Users\runneradmin\AppData\Local\vcpkg
           - os: android
+            osname: linux
             runon: ubuntu-latest
             cache_path: /home/runner/.cache/vcpkg
       fail-fast: false
@@ -44,15 +46,39 @@ jobs:
         key: cache-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.package }}
 
     - name: Prepare gRPC
-      if: matrix.package == 'grpc' && matrix.os == 'android'
+      if: matrix.package == 'grpc'
       shell: bash
       run: |
         cd vcpkg
         ./vcpkg install grpc
         mkdir -p ./installed/${{ matrix.arch }}-android/bin
-        cp ./installed/x64-linux/tools/protobuf/protoc ./installed/${{ matrix.arch }}-android/bin
-        cp ./installed/x64-linux/tools/grpc/grpc_cpp_plugin ./installed/${{ matrix.arch }}-android/bin
-    
+        cp ./installed/x64-${{ matrix.osname }}/tools/protobuf/* ./installed/${{ matrix.arch }}-android/bin
+        cp ./installed/x64-${{ matrix.osname }}/tools/grpc/* ./installed/${{ matrix.arch }}-android/bin
+
+    - name: Create Tools 7z
+      if: matrix.package == 'grpc'
+      uses: DuckSoft/create-7z-action@v1.0
+      with:
+        pathSource: ./installed/x64-${{ matrix.osname }}/tools
+        pathTarget: ./gRPC-tools.7z
+
+    - name: Upload Artifact
+      if: matrix.package == 'grpc'
+      uses: actions/upload-artifact@master
+      with:
+        name: gRPC-tools.7z
+        path: gRPC-tools.7z
+        
+    - name: Upload To Release
+      if: matrix.package == 'grpc'
+      uses: svenstaro/upload-release-action@v1-release
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: gRPC-tools.7z
+        asset_name: gRPC-tools.7z
+        tag: release
+        overwrite: true
+
     - name: Prepare Android Triplet
       if: matrix.os == 'android'
       shell: bash
