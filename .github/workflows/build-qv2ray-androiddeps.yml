@@ -1,0 +1,92 @@
+name: Build Qv2ray deps for Android
+
+on:
+  push:
+  schedule:
+      - cron: '0 0 */5 * *'
+      
+jobs:
+  build:
+    strategy:
+      matrix:
+        arch: [arm, arm64, x86, x64]
+        package: [grpc, curl]
+      fail-fast: false
+      
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2    
+    - name: Install VCPKG
+      shell: bash
+      run: |
+        set +e
+        git clone https://github.com/microsoft/vcpkg/
+        ./vcpkg/bootstrap-vcpkg.sh
+
+    - name: Cache VCPKG
+      uses: actions/cache@v1
+      with:
+        path: /home/runner/.cache/vcpkg
+        key: qv2ray-deps-android-cache-key-${{ matrix.arch }}
+    
+    - name: Create triplet
+      shell: bash
+      run: |
+        cd vcpkg
+        ./vcpkg install protobuf
+        ./vcpkg install grpc
+        mkdir -p ./installed/x86-android/bin
+        mkdir -p ./installed/x64-android/bin
+        mkdir -p ./installed/x86-android/tools/protobuf
+        mkdir -p ./installed/x64-android/tools/protobuf
+        mkdir -p ./installed/x86-android/tools/grpc
+        mkdir -p ./installed/x64-android/tools/grpc
+        mkdir -p ./installed/x64-linux/tools/grpc
+        mkdir -p ./installed/x64-linux/tools/protobuf
+        cp $(pwd)/installed/x64-linux/tools/protobuf/protoc ./installed/x64-android/tools/protobuf/protoc
+        cp $(pwd)/installed/x64-linux/tools/protobuf/protoc ./installed/x86-android/tools/protobuf/protoc
+        cp $(pwd)/installed/x64-linux/tools/protobuf/protoc ./installed/x64-android/bin/protoc
+        cp $(pwd)/installed/x64-linux/tools/protobuf/protoc ./installed/x86-android/bin/protoc
+        cp $(pwd)/installed/x64-linux/tools/grpc/grpc_cpp_plugin ./installed/x64-android/tools/grpc/grpc_cpp_plugin
+        cp $(pwd)/installed/x64-linux/tools/grpc/grpc_cpp_plugin ./installed/x86-android/tools/grpc/grpc_cpp_plugin
+        cp $(pwd)/installed/x64-linux/tools/grpc/grpc_cpp_plugin ./installed/x64-android/bin/grpc_cpp_plugin
+        cp $(pwd)/installed/x64-linux/tools/grpc/grpc_cpp_plugin ./installed/x86-android/bin/grpc_cpp_plugin
+        git apply -v ../0001_vcpkg_fix_curl_android_build.patch
+        sudo mkdir -p ./triplets/community
+        echo "
+        set(VCPKG_TARGET_ARCHITECTURE ${{ matrix.arch }})
+        set(VCPKG_CRT_LINKAGE dynamic)
+        set(VCPKG_LIBRARY_LINKAGE dynamic)
+        set(VCPKG_CMAKE_SYSTEM_NAME Android)
+        " | tee ./triplets/community/${{ matrix.arch }}-android.cmake
+        ls -lah ./triplets/community
+    
+    - name: Install version ${{ matrix.package }} ${{ matrix.arch }}
+      run: |
+        set +e
+        export PATH=$PATH:/home/runner/work/Qv2ray-deps/Qv2ray-deps/vcpkg/installed/x64-linux/tools/grpc
+        export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk-bundle"
+        ./vcpkg/vcpkg install ${{ matrix.package }}:${{ matrix.arch }}-android --debug
+        cat /home/runner/work/Qv2ray-deps/Qv2ray-deps/vcpkg/buildtrees/grpc/install-${{ matrix.arch }}-android-dbg-out.log
+      
+    - name: Export installed libraries
+      shell: bash
+      run: |
+        ./vcpkg/vcpkg export ${{ matrix.package }}:${{ matrix.arch }}-android --output=${{ matrix.arch }} --7zip
+        cp ./vcpkg/${{ matrix.arch }}.7z ./
+        
+    - name: Uploading artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: artifacts-${{ matrix.package }}-${{ matrix.arch }}.zip
+        path: ${{ matrix.arch }}.7z
+        
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v1-release
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{ matrix.arch }}.7z
+        asset_name: Qv2ray-deps-${{ matrix.package }}-${{ matrix.arch }}.7z
+        tag: release
+        overwrite: true
