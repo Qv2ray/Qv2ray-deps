@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         arch: [arm, arm64, x86, x64]
-        package: [grpc, curl]
+        package: [grpc, curl, openssl]
       fail-fast: false
       
     runs-on: ubuntu-latest
@@ -29,8 +29,9 @@ jobs:
       with:
         path: /home/runner/.cache/vcpkg
         key: qv2ray-deps-android-cache-${{ matrix.arch }}-${{ matrix.package }}
-    
-    - name: Prepare
+
+    - name: Prepare gRPC
+      if: matrix.package == 'grpc'
       shell: bash
       run: |
         cd vcpkg
@@ -38,6 +39,11 @@ jobs:
         mkdir -p ./installed/${{ matrix.arch }}-android/bin
         cp ./installed/x64-linux/tools/protobuf/protoc ./installed/${{ matrix.arch }}-android/bin
         cp ./installed/x64-linux/tools/grpc/grpc_cpp_plugin ./installed/${{ matrix.arch }}-android/bin
+    
+    - name: Prepare Android Triplet
+      shell: bash
+      run: |
+        cd vcpkg
         git apply -v ../0001_vcpkg_fix_curl_android_build.patch
         mkdir -p ./triplets/community
         echo "
