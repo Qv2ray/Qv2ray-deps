@@ -21,7 +21,7 @@ index 000000000..b189a71a2
 +--- a/src/core/lib/gpr/wrap_memcpy.cc
 ++++ b/src/core/lib/gpr/wrap_memcpy.cc
 +@@ -28,7 +28,7 @@
-+ 
++
 + extern "C" {
 + #ifdef __linux__
 +-#if defined(__x86_64__) && !defined(GPR_MUSL_LIBC_COMPAT)
