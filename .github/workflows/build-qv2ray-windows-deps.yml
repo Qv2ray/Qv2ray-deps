@@ -65,6 +65,7 @@ jobs:
     - name: Install version ${{ matrix.package }} ${{ matrix.arch }}
       run: |
         set +e
+        export PATH=$PATH:/home/runner/work/Qv2ray-deps/Qv2ray-deps/vcpkg/installed/x64-android/tools/
         export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk-bundle"
         ./vcpkg/vcpkg install ${{ matrix.package }}:${{ matrix.arch }}-android --debug
         cat /home/runner/work/Qv2ray-deps/Qv2ray-deps/vcpkg/buildtrees/grpc/install-${{ matrix.arch }}-android-dbg-out.log
