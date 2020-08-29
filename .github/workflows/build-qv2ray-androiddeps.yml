@@ -68,7 +68,6 @@ jobs:
         export PATH=$PATH:/home/runner/work/Qv2ray-deps/Qv2ray-deps/vcpkg/installed/x64-linux/tools/grpc
         export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk-bundle"
         ./vcpkg/vcpkg install ${{ matrix.package }}:${{ matrix.arch }}-android --debug
-        cat /home/runner/work/Qv2ray-deps/Qv2ray-deps/vcpkg/buildtrees/grpc/install-${{ matrix.arch }}-android-dbg-out.log
       
     - name: Export installed libraries
       shell: bash
