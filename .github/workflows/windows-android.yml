@@ -76,7 +76,7 @@ jobs:
       shell: bash
       run: |
         ./vcpkg/vcpkg export ${{ matrix.package }}:${{ matrix.arch }}-${{ matrix.os }} --output=${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }} --7zip
-        cp ./vcpkg/${{ matrix.arch }}-${{ matrix.package }}.7z ./
+        cp ./vcpkg/${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z ./
         
     - name: Upload Artifact
       uses: actions/upload-artifact@master
