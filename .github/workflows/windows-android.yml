@@ -1,4 +1,4 @@
-name: OpenSSL cURL gRPC for Android / Windows
+name: Build Qv2ray deps for Android / Windows
 
 on:
   push:
@@ -9,9 +9,9 @@ jobs:
   build:
     strategy:
       matrix:
+        package: [grpc, curl, openssl]
         os: [windows, android]
         arch: [arm, arm64, x86, x64]
-        package: [grpc, curl, openssl]
         exclude:
           - os: windows
             arch: arm
