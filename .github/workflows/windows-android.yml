@@ -67,6 +67,7 @@ jobs:
         ls -lah ./triplets/community
     
     - name: Install ${{ matrix.package }} on ${{ matrix.arch }}
+      shell: bash
       run: |
         export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk-bundle"
         ./vcpkg/vcpkg install ${{ matrix.package }}:${{ matrix.arch }}-${{ matrix.os }} --debug
