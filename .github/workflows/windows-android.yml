@@ -1,0 +1,96 @@
+name: Build Qv2ray deps for Android / Windows
+
+on:
+  push:
+  schedule:
+      - cron: '0 0 */5 * *'
+      
+jobs:
+  build:
+    strategy:
+      matrix:
+        package: [grpc, curl, openssl]
+        os: [windows, android]
+        arch: [arm, arm64, x86, x64]
+        exclude:
+          - os: windows
+            arch: arm
+          - os: windows
+            arch: arm64
+        include:
+          - os: windows
+            runon: windows-latest
+            cache_path: C:\Users\runneradmin\AppData\Local\vcpkg
+          - os: android
+            runon: ubuntu-latest
+            cache_path: /home/runner/.cache/vcpkg
+      fail-fast: false
+      
+    runs-on: ${{ matrix.runon }}
+    
+    steps:
+    - uses: actions/checkout@v2    
+    - name: Install VCPKG
+      shell: bash
+      run: |
+        set +e
+        git clone https://github.com/microsoft/vcpkg
+        ./vcpkg/bootstrap-vcpkg.sh
+
+    - name: Cache VCPKG
+      uses: actions/cache@v2
+      with:
+        path: ${{ matrix.cache_path }}
+        key: cache-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.package }}
+
+    - name: Prepare gRPC
+      if: matrix.package == 'grpc' && matrix.os == 'android'
+      shell: bash
+      run: |
+        cd vcpkg
+        ./vcpkg install grpc
+        mkdir -p ./installed/${{ matrix.arch }}-android/bin
+        cp ./installed/x64-linux/tools/protobuf/protoc ./installed/${{ matrix.arch }}-android/bin
+        cp ./installed/x64-linux/tools/grpc/grpc_cpp_plugin ./installed/${{ matrix.arch }}-android/bin
+    
+    - name: Prepare Android Triplet
+      if: matrix.os == 'android'
+      shell: bash
+      run: |
+        cd vcpkg
+        git apply -v ../0001_vcpkg_fix_curl_android_build.patch
+        mkdir -p ./triplets/community
+        echo "
+        set(VCPKG_TARGET_ARCHITECTURE ${{ matrix.arch }})
+        set(VCPKG_CRT_LINKAGE dynamic)
+        set(VCPKG_LIBRARY_LINKAGE dynamic)
+        set(VCPKG_CMAKE_SYSTEM_NAME Android)
+        " | tee ./triplets/community/${{ matrix.arch }}-android.cmake
+        ls -lah ./triplets/community
+    
+    - name: Install ${{ matrix.package }} on ${{ matrix.arch }}
+      shell: bash
+      run: |
+        export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk-bundle"
+        ./vcpkg/vcpkg install ${{ matrix.package }}:${{ matrix.arch }}-${{ matrix.os }} --debug
+      
+    - name: Export Libraries
+      shell: bash
+      run: |
+        ./vcpkg/vcpkg export ${{ matrix.package }}:${{ matrix.arch }}-${{ matrix.os }} --output=${{ matrix.os }}-${{ matrix.arch }} --7zip
+        cp ./vcpkg/${{ matrix.os }}-${{ matrix.arch }}.7z ./${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z
+        
+    - name: Upload Artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: ${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z
+        path: ${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z
+        
+    - name: Upload To Release
+      uses: svenstaro/upload-release-action@v1-release
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z
+        asset_name: ${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z
+        tag: release
+        overwrite: true
