@@ -43,14 +43,14 @@ jobs:
         mkdir -p ./installed/x64-android/tools/grpc
         mkdir -p ./installed/x64-linux/tools/grpc
         mkdir -p ./installed/x64-linux/tools/protobuf
-        ln -s ../../x64-linux/tools/protobuf/protoc ./installed/x64-android/tools/protobuf/protoc
-        ln -s ../../x64-linux/tools/protobuf/protoc ./installed/x86-android/tools/protobuf/protoc
+        ln -s ../../../x64-linux/tools/protobuf/protoc ./installed/x64-android/tools/protobuf/protoc
+        ln -s ../../../x64-linux/tools/protobuf/protoc ./installed/x86-android/tools/protobuf/protoc
         ln -s ../../x64-linux/tools/protobuf/protoc ./installed/x64-android/bin/protoc
         ln -s ../../x64-linux/tools/protobuf/protoc ./installed/x86-android/bin/protoc
         ln -s ../../../x64-linux/tools/grpc/grpc_cpp_plugin ./installed/x64-android/tools/grpc/grpc_cpp_plugin
         ln -s ../../../x64-linux/tools/grpc/grpc_cpp_plugin ./installed/x86-android/tools/grpc/grpc_cpp_plugin
-        ln -s ../../../x64-linux/tools/grpc/grpc_cpp_plugin ./installed/x64-android/bin/grpc_cpp_plugin
-        ln -s ../../../x64-linux/tools/grpc/grpc_cpp_plugin ./installed/x86-android/bin/grpc_cpp_plugin
+        ln -s ../../x64-linux/tools/grpc/grpc_cpp_plugin ./installed/x64-android/bin/grpc_cpp_plugin
+        ln -s ../../x64-linux/tools/grpc/grpc_cpp_plugin ./installed/x86-android/bin/grpc_cpp_plugin
         ./vcpkg install protobuf
         git apply -v ../0001_vcpkg_fix_curl_android_build.patch
         sudo mkdir -p ./triplets/community
