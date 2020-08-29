@@ -40,7 +40,7 @@ jobs:
     - name: Cache VCPKG
       uses: actions/cache@v1
       with:
-        path: ${{ matrix.cachepath }}
+        path: ${{ matrix.cache_path }}
         key: qv2ray-deps-${{ matrix.os }}-cache-${{ matrix.arch }}-${{ matrix.package }}
 
     - name: Prepare gRPC
