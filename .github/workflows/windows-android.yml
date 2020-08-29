@@ -38,10 +38,10 @@ jobs:
         ./vcpkg/bootstrap-vcpkg.sh
 
     - name: Cache VCPKG
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ${{ matrix.cache_path }}
-        key: qv2ray-deps-${{ matrix.os }}-cache-${{ matrix.arch }}-${{ matrix.package }}
+        key: cache-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.package }}
 
     - name: Prepare gRPC
       if: matrix.package == 'grpc' && matrix.os == 'android'
