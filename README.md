@@ -7,7 +7,7 @@ This repo contains [GitHub Action Scripts](https://github.com/Qv2ray/Qv2ray-deps
 - cURL
 - OpenSSL
 
-## Platforms:
+## Supported Platforms:
 - Android
   - ARM
   - ARM64
