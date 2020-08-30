@@ -1,7 +1,16 @@
 diff --git a/ports/curl/portfile.cmake b/ports/curl/portfile.cmake
-index 0ad9cd7a2..392b52dac 100644
+index 0ad9cd7a2..b4caac08b 100644
 --- a/ports/curl/portfile.cmake
 +++ b/ports/curl/portfile.cmake
+@@ -68,7 +68,7 @@ vcpkg_configure_cmake(
+         ${SECTRANSP_OPTIONS}
+         -DBUILD_TESTING=OFF
+         -DENABLE_MANUAL=OFF
+-        -DCURL_STATICLIB=${CURL_STATICLIB}
++        -DCURL_STATICLIB=ON
+         -DCMAKE_DISABLE_FIND_PACKAGE_Perl=ON
+         -DENABLE_DEBUG=ON
+ )
 @@ -90,6 +90,7 @@ if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
  else()
      file(INSTALL ${CURRENT_PACKAGES_DIR}/bin/curl-config DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT})
@@ -10,9 +19,16 @@ index 0ad9cd7a2..392b52dac 100644
      #Fix install path
      file(READ ${CURRENT_PACKAGES_DIR}/share/${PORT}/curl-config CURL_CONFIG)
      string(REPLACE "${CURRENT_PACKAGES_DIR}" "${CURRENT_INSTALLED_DIR}" CURL_CONFIG "${CURL_CONFIG}")
+@@ -109,4 +110,4 @@ else()
+ endif()
+
+ file(INSTALL ${CURRENT_PORT_DIR}/vcpkg-cmake-wrapper.cmake DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT})
+-file(INSTALL ${SOURCE_PATH}/COPYING DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)
+\ No newline at end of file
++file(INSTALL ${SOURCE_PATH}/COPYING DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)
 diff --git a/ports/grpc/00012-fix-x86-android-build.patch b/ports/grpc/00012-fix-x86-android-build.patch
 new file mode 100644
-index 000000000..b189a71a2
+index 000000000..1c7606eea
 --- /dev/null
 +++ b/ports/grpc/00012-fix-x86-android-build.patch
 @@ -0,0 +1,13 @@
