@@ -21,11 +21,9 @@ jobs:
           - os: windows
             osname: windows
             runon: windows-latest
-            cache_path: C:\Users\runneradmin\AppData\Local\vcpkg
           - os: android
             osname: linux
             runon: ubuntu-latest
-            cache_path: /home/runner/.cache/vcpkg
       fail-fast: false
       
     runs-on: ${{ matrix.runon }}
@@ -38,12 +36,6 @@ jobs:
         set +e
         git clone https://github.com/microsoft/vcpkg
         ./vcpkg/bootstrap-vcpkg.sh
-
-    - name: Cache VCPKG
-      uses: actions/cache@v2
-      with:
-        path: ${{ matrix.cache_path }}
-        key: cache-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.package }}
 
     - name: Prepare gRPC
       if: matrix.package == 'grpc'
