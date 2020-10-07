@@ -19,10 +19,8 @@ jobs:
             arch: arm64
         include:
           - os: windows
-            osname: windows
             runon: windows-latest
           - os: android
-            osname: linux
             runon: ubuntu-latest
       fail-fast: false
       
@@ -30,49 +28,23 @@ jobs:
     
     steps:
     - uses: actions/checkout@v2    
-    - name: Install VCPKG
+    - name: Install vcpkg
       shell: bash
       run: |
         set +e
         git clone https://github.com/microsoft/vcpkg
         ./vcpkg/bootstrap-vcpkg.sh
 
-    - name: Prepare gRPC
-      if: matrix.package == 'grpc'
+    - name: Prepare Android protoc and grpc_cpp_plugin
+      if: matrix.package == 'grpc' && matrix.os == 'android'
       shell: bash
       run: |
-        set +e
         cd vcpkg
         ./vcpkg install grpc
         mkdir -p ./installed/${{ matrix.arch }}-android/bin
-        cp -rv ./installed/x86-${{ matrix.osname }}/ ./installed/x64-${{ matrix.osname }}/
-        cp -rv ./installed/x64-${{ matrix.osname }}/tools/protobuf/* ./installed/${{ matrix.arch }}-android/bin
-        cp -rv ./installed/x64-${{ matrix.osname }}/tools/grpc/* ./installed/${{ matrix.arch }}-android/bin
-
-    - name: Create Tools 7z
-      if: matrix.package == 'grpc'
-      uses: DuckSoft/create-7z-action@v1.0
-      with:
-        pathSource: ./vcpkg/installed/x64-${{ matrix.osname }}/tools
-        pathTarget: ./gRPC-tools-${{ matrix.osname }}.7z
-
-    - name: Upload Artifact
-      if: matrix.package == 'grpc'
-      uses: actions/upload-artifact@master
-      with:
-        name: gRPC-tools-${{ matrix.osname }}.7z
-        path: gRPC-tools-${{ matrix.osname }}.7z
-        
-    - name: Upload To Release
-      if: matrix.package == 'grpc'
-      uses: svenstaro/upload-release-action@v1-release
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: gRPC-tools-${{ matrix.osname }}.7z
-        asset_name: gRPC-tools-${{ matrix.osname }}.7z
-        tag: release
-        overwrite: true
-
+        cp ./installed/x64-linux/tools/protobuf/protoc ./installed/${{ matrix.arch }}-android/bin
+        cp ./installed/x64-linux/tools/grpc/grpc_cpp_plugin ./installed/${{ matrix.arch }}-android/bin
+    
     - name: Prepare Android Triplet
       if: matrix.os == 'android'
       shell: bash
@@ -83,7 +55,7 @@ jobs:
         echo "
         set(VCPKG_TARGET_ARCHITECTURE ${{ matrix.arch }})
         set(VCPKG_CRT_LINKAGE dynamic)
-        set(VCPKG_LIBRARY_LINKAGE static)
+        set(VCPKG_LIBRARY_LINKAGE dynamic)
         set(VCPKG_CMAKE_SYSTEM_NAME Android)
         " | tee ./triplets/community/${{ matrix.arch }}-android.cmake
         ls -lah ./triplets/community
@@ -94,7 +66,7 @@ jobs:
         export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk-bundle"
         ./vcpkg/vcpkg install ${{ matrix.package }}:${{ matrix.arch }}-${{ matrix.os }} --debug
       
-    - name: Export Libraries
+    - name: Export Artifacts
       shell: bash
       run: |
         ./vcpkg/vcpkg export ${{ matrix.package }}:${{ matrix.arch }}-${{ matrix.os }} --output=${{ matrix.os }}-${{ matrix.arch }} --7zip
@@ -106,7 +78,7 @@ jobs:
         name: ${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z
         path: ${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z
         
-    - name: Upload To Release
+    - name: Upload Release
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
