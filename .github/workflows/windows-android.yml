@@ -37,12 +37,21 @@ jobs:
         git clone https://github.com/microsoft/vcpkg
         ./vcpkg/bootstrap-vcpkg.sh
 
+    - name: Prepare Android protoc and grpc_cpp_plugin
+      if: matrix.package == 'grpc' && matrix.os == 'android'
+      shell: bash
+      run: |
+        cd vcpkg
+        ./vcpkg install grpc
+        mkdir -p ./installed/${{ matrix.arch }}-android/bin
+        cp ./installed/x64-linux/tools/protobuf/protoc ./installed/${{ matrix.arch }}-android/bin
+        cp ./installed/x64-linux/tools/grpc/grpc_cpp_plugin ./installed/${{ matrix.arch }}-android/bin
+    
     - name: Prepare Android Triplet
       if: matrix.os == 'android'
       shell: bash
       run: |
         cd vcpkg
-        rm -rvf 
         git apply -v ../0001_vcpkg_fix_curl_android_build.patch
         mkdir -p ./triplets/community
         echo "
