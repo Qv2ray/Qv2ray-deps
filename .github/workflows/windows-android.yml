@@ -80,7 +80,7 @@ jobs:
         name: ${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z
         path: ${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z
         
-    - name: Upload Release
+    - name: Upload To Release
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
