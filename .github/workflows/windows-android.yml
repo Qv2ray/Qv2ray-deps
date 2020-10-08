@@ -43,9 +43,9 @@ jobs:
         cd vcpkg
         ./vcpkg install grpc
         mkdir -p ./installed/${{ matrix.arch }}-android/bin
-        cp -rv ./installed/x86-${{ matrix.osname }}/ ./installed/x64-${{ matrix.osname }}/
-        cp -rv ./installed/x64-${{ matrix.osname }}/tools/protobuf/* ./installed/${{ matrix.arch }}-android/bin
-        cp -rv ./installed/x64-${{ matrix.osname }}/tools/grpc/* ./installed/${{ matrix.arch }}-android/bin
+        cp -rv ./installed/x86-${{ matrix.os }}/ ./installed/x64-${{ matrix.os }}/
+        cp -rv ./installed/x64-${{ matrix.os }}/tools/protobuf/* ./installed/${{ matrix.arch }}-android/bin
+        cp -rv ./installed/x64-${{ matrix.os }}/tools/grpc/* ./installed/${{ matrix.arch }}-android/bin
         
     - name: Create Tools 7z
       if: matrix.package == 'grpc'
