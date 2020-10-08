@@ -83,6 +83,14 @@ jobs:
     runs-on: ubuntu-latest
     name: Build grpc tools for android
     steps:
+    - uses: actions/checkout@v2    
+    - name: Install vcpkg
+      shell: bash
+      run: |
+        set +e
+        git clone https://github.com/microsoft/vcpkg
+        ./vcpkg/bootstrap-vcpkg.sh
+
     - name: Prepare gRPC
       shell: bash
       run: |
