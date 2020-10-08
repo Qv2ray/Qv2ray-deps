@@ -19,8 +19,10 @@ jobs:
             arch: arm64
         include:
           - os: windows
+            osname: windows
             runon: windows-latest
           - os: android
+            osname: linux
             runon: ubuntu-latest
       fail-fast: false
       
@@ -42,11 +44,7 @@ jobs:
         set +e
         cd vcpkg
         ./vcpkg install grpc
-        mkdir -p ./installed/${{ matrix.arch }}-android/bin
-        cp -rv ./installed/x86-${{ matrix.os }}/ ./installed/x64-${{ matrix.os }}/
-        cp -rv ./installed/x64-${{ matrix.os }}/tools/protobuf/* ./installed/${{ matrix.arch }}-android/bin
-        cp -rv ./installed/x64-${{ matrix.os }}/tools/grpc/* ./installed/${{ matrix.arch }}-android/bin
-        
+
     - name: Create Tools 7z
       if: matrix.package == 'grpc'
       uses: DuckSoft/create-7z-action@v1.0
