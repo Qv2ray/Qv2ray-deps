@@ -37,43 +37,12 @@ jobs:
         git clone https://github.com/microsoft/vcpkg
         ./vcpkg/bootstrap-vcpkg.sh
 
-    - name: Prepare gRPC
-      if: matrix.package == 'grpc'
-      shell: bash
-      run: |
-        set +e
-        cd vcpkg
-        ./vcpkg install grpc
-
-    - name: Create Tools 7z
-      if: matrix.package == 'grpc'
-      uses: DuckSoft/create-7z-action@v1.0
-      with:
-        pathSource: ./vcpkg/installed/x64-${{ matrix.osname }}/tools
-        pathTarget: ./gRPC-tools-${{ matrix.osname }}.7z
-
-    - name: Upload Artifact
-      if: matrix.package == 'grpc'
-      uses: actions/upload-artifact@master
-      with:
-        name: gRPC-tools-${{ matrix.osname }}.7z
-        path: gRPC-tools-${{ matrix.osname }}.7z
-        
-    - name: Upload To Release
-      if: matrix.package == 'grpc'
-      uses: svenstaro/upload-release-action@v1-release
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: gRPC-tools-${{ matrix.osname }}.7z
-        asset_name: gRPC-tools-${{ matrix.osname }}.7z
-        tag: release
-        overwrite: true
-    
     - name: Prepare Android Triplet
       if: matrix.os == 'android'
       shell: bash
       run: |
         cd vcpkg
+        rm -rvf 
         git apply -v ../0001_vcpkg_fix_curl_android_build.patch
         mkdir -p ./triplets/community
         echo "
@@ -110,3 +79,35 @@ jobs:
         asset_name: ${{ matrix.package }}-${{ matrix.arch }}-${{ matrix.os }}.7z
         tag: release
         overwrite: true
+  build-tools:
+    runs-on: ubuntu-latest
+    name: Build grpc tools for android
+    steps:
+    - name: Prepare gRPC
+      shell: bash
+      run: |
+        set +e
+        cd vcpkg
+        ./vcpkg install grpc
+
+    - name: Create Tools 7z
+      uses: DuckSoft/create-7z-action@v1.0
+      with:
+        pathSource: ./vcpkg/installed/x64-linux/tools
+        pathTarget: ./grpc-tools-linux.7z
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: grpc-tools-linux.7z
+        path: grpc-tools-linux.7z
+        
+    - name: Upload To Release
+      uses: svenstaro/upload-release-action@v1-release
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: grpc-tools-linux.7z
+        asset_name: grpc-tools-linux.7z
+        tag: release
+        overwrite: true
+    
