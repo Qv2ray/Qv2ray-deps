@@ -1,15 +1,3 @@
-diff --git a/ports/curl/portfile.cmake b/ports/curl/portfile.cmake
-index 0ad9cd7a2..392b52dac 100644
---- a/ports/curl/portfile.cmake
-+++ b/ports/curl/portfile.cmake
-@@ -90,6 +90,7 @@ if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
- else()
-     file(INSTALL ${CURRENT_PACKAGES_DIR}/bin/curl-config DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT})
-     file(REMOVE ${CURRENT_PACKAGES_DIR}/bin/curl-config ${CURRENT_PACKAGES_DIR}/debug/bin/curl-config)
-+    file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/bin ${CURRENT_PACKAGES_DIR}/debug/bin)
-     #Fix install path
-     file(READ ${CURRENT_PACKAGES_DIR}/share/${PORT}/curl-config CURL_CONFIG)
-     string(REPLACE "${CURRENT_PACKAGES_DIR}" "${CURRENT_INSTALLED_DIR}" CURL_CONFIG "${CURL_CONFIG}")
 diff --git a/ports/grpc/00012-fix-x86-android-build.patch b/ports/grpc/00012-fix-x86-android-build.patch
 new file mode 100644
 index 000000000..b189a71a2
@@ -30,53 +18,14 @@ index 000000000..b189a71a2
 + void* __wrap_memcpy(void* destination, const void* source, size_t num) {
 +   return memcpy(destination, source, num);
 diff --git a/ports/grpc/portfile.cmake b/ports/grpc/portfile.cmake
-index 79e344b54..836635c93 100644
+index a082a6963..37fa853b0 100644
 --- a/ports/grpc/portfile.cmake
 +++ b/ports/grpc/portfile.cmake
-@@ -2,13 +2,7 @@ if(VCPKG_TARGET_IS_WINDOWS)
-     vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
- endif()
- 
--vcpkg_from_github(
--    OUT_SOURCE_PATH SOURCE_PATH
--    REPO grpc/grpc
--    REF 7d7e4567625db7cfebf8969a225948097a3f9f89 #v1.31.1
--    SHA512 a348b8779f533c53b99c052264e0a008121087267bcf836fb2310819ab384effdc0996df031f407ee4bf8bb0cb37a81e061e65ab24ab7011ce6400de3808f5a4
--    HEAD_REF master
--    PATCHES
-+set(GRPC_PATCHES
-         00001-fix-uwp.patch
-         00002-static-linking-in-linux.patch
-         00003-undef-base64-macro.patch
-@@ -20,12 +14,27 @@ vcpkg_from_github(
+@@ -17,6 +17,7 @@ vcpkg_from_github(
+         00009-use-system-upb.patch
+         00010-add-feature-absl-sync.patch
+         00011-fix-csharp_plugin.patch
++        00012-fix-x86-android-build.patch
          snprintf.patch
  )
- 
--if(VCPKG_TARGET_IS_UWP OR VCPKG_TARGET_ARCHITECTURE STREQUAL "arm" OR VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
--    set(gRPC_BUILD_CODEGEN OFF)
--else()
--    set(gRPC_BUILD_CODEGEN ON)
-+if(VCPKG_CMAKE_SYSTEM_NAME STREQUAL "Android")
-+    list(APPEND GRPC_PATCHES 00012-fix-x86-android-build.patch)
- endif()
- 
-+vcpkg_from_github(
-+    OUT_SOURCE_PATH SOURCE_PATH
-+    REPO grpc/grpc
-+    REF 7d7e4567625db7cfebf8969a225948097a3f9f89 #v1.31.1
-+    SHA512 a348b8779f533c53b99c052264e0a008121087267bcf836fb2310819ab384effdc0996df031f407ee4bf8bb0cb37a81e061e65ab24ab7011ce6400de3808f5a4
-+    HEAD_REF master
-+    PATCHES
-+        ${GRPC_PATCHES}
-+)
-+
-+# 为嘛呀
-+#if(VCPKG_TARGET_IS_UWP OR VCPKG_TARGET_ARCHITECTURE STREQUAL "arm" OR VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
-+#    set(gRPC_BUILD_CODEGEN OFF)
-+#else()
-+    set(gRPC_BUILD_CODEGEN ON)
-+#endif()
-+
- string(COMPARE EQUAL "${VCPKG_CRT_LINKAGE}" "static" gRPC_MSVC_STATIC_RUNTIME)
- string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" gRPC_STATIC_LINKING)
  
