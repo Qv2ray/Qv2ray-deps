@@ -1,3 +1,19 @@
+diff --git a/ports/curl/portfile.cmake b/ports/curl/portfile.cmake
+index 2c5d4dd62..54e725dcd 100644
+--- a/ports/curl/portfile.cmake
++++ b/ports/curl/portfile.cmake
+@@ -95,9 +95,9 @@ file(READ ${CURRENT_PACKAGES_DIR}/share/${PORT}/curl-config CURL_CONFIG)
+ string(REPLACE "${CURRENT_PACKAGES_DIR}" "${CURRENT_INSTALLED_DIR}" CURL_CONFIG "${CURL_CONFIG}")
+ file(WRITE ${CURRENT_PACKAGES_DIR}/share/${PORT}/curl-config "${CURL_CONFIG}")
+
+-if(VCPKG_LIBRARY_LINKAGE STREQUAL "static" OR VCPKG_TARGET_IS_LINUX)
++#if(VCPKG_LIBRARY_LINKAGE STREQUAL "static" OR VCPKG_TARGET_IS_LINUX)
+     file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/bin ${CURRENT_PACKAGES_DIR}/debug/bin)
+-endif()
++#endif()
+
+ if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+     vcpkg_replace_string(${CURRENT_PACKAGES_DIR}/include/curl/curl.h
 diff --git a/ports/grpc/00012-fix-x86-android-build.patch b/ports/grpc/00012-fix-x86-android-build.patch
 new file mode 100644
 index 000000000..b189a71a2
