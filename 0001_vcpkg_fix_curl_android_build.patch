@@ -42,7 +42,7 @@ index a082a6963..37fa853b0 100644
          00010-add-feature-absl-sync.patch
          00011-fix-csharp_plugin.patch
          00012-fix-use-cxx17.patch
-+        00012-fix-x86-android-build.patch
          snprintf.patch
+         00012-fix-x86-android-build.patch
  )
  
