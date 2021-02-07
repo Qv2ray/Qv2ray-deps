@@ -17,6 +17,8 @@ jobs:
             arch: arm
           - os: windows
             arch: arm64
+          - os: windows
+            arch: x86
         include:
           - os: windows
             osname: windows
